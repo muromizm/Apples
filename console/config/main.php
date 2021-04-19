@@ -30,6 +30,12 @@ return [
                 ],
             ],
         ],
+        'authManager' => [
+            'class' => 'yii\rbac\PhpManager',
+        ],
+        'user' => [
+            'class' => 'mdm\admin\models\User',
+        ],
     ],
     'params' => $params,
 ];
