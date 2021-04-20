@@ -13,17 +13,18 @@ class AppleSearch extends Apple
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            [['id', 'color', 'created_at', 'fall_at', 'status', 'eaten'], 'integer'],
+            [['color'], 'string'],
+            [['id', 'created_at', 'fall_at', 'status', 'eaten'], 'integer'],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function scenarios()
+    public function scenarios(): array
     {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
@@ -36,7 +37,7 @@ class AppleSearch extends Apple
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search(array $params): ActiveDataProvider
     {
         $query = Apple::find();
 
