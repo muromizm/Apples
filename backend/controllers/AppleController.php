@@ -10,6 +10,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\filters\VerbFilter;
+use yii\db\StaleObjectException;
 use Exception;
 use Throwable;
 
@@ -52,6 +53,7 @@ class AppleController extends Controller
 
         $searchModel->color = null;
         $searchModel->created_at = null;
+        $searchModel->status = null;
 
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -123,6 +125,61 @@ class AppleController extends Controller
     public function actionDelete(int $id): Response
     {
         $this->findModel($id)->delete();
+
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Генерирует яблоки.
+     * @return Response
+     */
+    public function actionGenerate(): Response
+    {
+        // Максимальное число сгенерированных яблок
+        $maxCount = 10;
+
+        $count = rand(1, $maxCount);
+
+        for ($i = 1; $i <= $count; $i++) {
+            $apple = new Apple();
+            $apple->save();
+        }
+
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Роняет яблоко.
+     * @param int $id
+     * @return Response
+     * @throws NotFoundHttpException
+     * @throws Throwable
+     */
+    public function actionFall(int $id): Response
+    {
+        $model = $this->findModel($id);
+        $model->fallToGround();
+        $model->save();
+
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Откусывает от яблока.
+     * @param int $id
+     * @return Response
+     * @throws NotFoundHttpException
+     * @throws Throwable
+     * @throws StaleObjectException
+     */
+    public function actionEat(int $id): Response
+    {
+        // Сколько можно откусить за раз
+        $eatPercent = 20;
+
+        $model = $this->findModel($id);
+        $model->eat($eatPercent);
+        $model->save();
 
         return $this->redirect(['index']);
     }

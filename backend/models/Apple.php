@@ -5,6 +5,7 @@ namespace backend\models;
 use yii\base\UserException;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
+use Throwable;
 
 /**
  * This is the model class for table "apple".
@@ -58,6 +59,7 @@ class Apple extends ActiveRecord
         $config = [
             'color' => $color,
             'created_at' => $createdAt,
+            'status' => self::STATUS_ON_TREE,
         ];
 
         parent::__construct($config);
@@ -93,7 +95,7 @@ class Apple extends ActiveRecord
      */
     private function isRotten(): bool
     {
-        return $this->isFall() && ($this->fall_at > time() + self::ROTTEN_TIME);
+        return $this->isFall() && ($this->fall_at < time() - self::ROTTEN_TIME);
     }
 
     /**
@@ -134,7 +136,7 @@ class Apple extends ActiveRecord
      * Откусывает от яблока.
      * @param int|null $percent
      * @return bool
-     * @throws \Throwable
+     * @throws Throwable
      * @throws StaleObjectException
      */
     public function eat(int $percent = null): bool
@@ -173,10 +175,13 @@ class Apple extends ActiveRecord
     /**
      * Удаляет яблоко.
      * @throws StaleObjectException
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function remove()
     {
-        $this->delete();
+        Apple::find()
+            ->where(['id' => $this->id])
+            ->one()
+            ->delete();
     }
 }
